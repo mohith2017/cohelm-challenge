@@ -8,9 +8,6 @@ export default function LoginPageContents() {
                 <div className='form'>
                     <LoginForm></LoginForm>
                 </div>
-                {/*<div className='image'>
-                    <Image fill src='/login-page.png' alt='login-image'/>
-                </div>*/}
             </div>
         </>
     )

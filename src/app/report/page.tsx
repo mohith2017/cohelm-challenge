@@ -1,4 +1,3 @@
-import fs from 'fs';
 import type { Metadata } from 'next';
 import { getReportData } from '../../../api/cohelm';
 
@@ -11,15 +10,13 @@ export const metadata: Metadata = {
 
 
 export default async function Page() {
-  const report  = await getReportData(); 
+  // const report  = await getReportData(); 
 
   return (
     <>
-      Report page
-        <p>{report.case_id}</p>
-        
+    Report Page
+        {/* <p>{report.case_id}</p> */}
+
     </>
-
-
   )
 }
