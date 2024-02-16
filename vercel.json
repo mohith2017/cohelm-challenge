@@ -1,0 +1,10 @@
+{
+    "version": 2,
+    "routes": [
+      {
+        "src": "/api/cohelm",
+        "dest": "/pages/api/cohelm.ts"
+      }
+    ]
+  }
+  
