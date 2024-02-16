@@ -210,14 +210,14 @@ export default function ReportForm({ }: IReportForm) {
                     <AccordionDetails>
                     {step.question}
 
-                    <Typography variant="body2" color="green">
+                    <Typography variant="body2" sx={{ color: step.is_met ? "#088F8F" : "#D22B2B" }}>
                         Selected Options
                       </Typography>
 
                     {step.options && step.options.map((option:any, index:any) => (
                       <>
                       {option.selected && 
-                       <Typography variant="body2" color="green">
+                       <Typography variant="body2" sx={{ color: step.is_met ? "#088F8F" : "#D22B2B" }}>
                        <CheckIcon /> {option.key} {option.text}
                       </Typography>}
                       </>
@@ -250,6 +250,7 @@ export default function ReportForm({ }: IReportForm) {
 
                         <div></div>
                         <br/><br/>
+                        {step.is_met ?
                         <div className="font-bold"> 
                         Option/Section &nbsp;
                         {step.options && step.options
@@ -260,9 +261,12 @@ export default function ReportForm({ }: IReportForm) {
                                                {option.key} {index < step.options.length - 1 && ', '}
                                       </>
                                         ))} 
+
+                        
                          
                         has been selected because...
                         </div>
+                        : <div className="font-bold">So this hasn't met our requirement as explained below: </div>}
                        
                     {step.reasoning && step.reasoning.split("\n").map((sent:any , index:any) => (
                       <div className="mt-2">
