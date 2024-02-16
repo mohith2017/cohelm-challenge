@@ -10,7 +10,15 @@ export const metadata: Metadata = {
 
 
 export default async function Page() {
-    const report = await getReportData();
+  let report;
+  try {
+    report = await getReportData();
+    // Use the report data
+    console.log("Report data:", report);
+  } catch (error) {
+    console.error("Error fetching report data:", error);
+  }
+  
 
 
   return (
