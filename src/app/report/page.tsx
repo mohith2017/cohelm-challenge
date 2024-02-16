@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getReportData } from '../../../api/cohelm';
+import { getReportData } from '../../../common/api/cohelm';
 
 export const metadata: Metadata = {
   title: 'Cohelm: Report',
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 
 
 export default async function Page() {
-  // const report  = await getReportData(); 
+  const report  = await getReportData(); 
+  
 
   return (
     <>
