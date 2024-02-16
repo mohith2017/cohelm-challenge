@@ -31,3 +31,9 @@ body {
     text-wrap: balance;
   }
 } */
+
+.line {
+  width: 100%; /* Adjust width as needed */
+  height: 1px; /* Adjust height as needed */
+  background-color: gray; /* Adjust color as needed */
+}

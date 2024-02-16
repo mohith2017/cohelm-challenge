@@ -1,26 +1,38 @@
 'use client'
-import { Checkbox, TextField, Typography, Button, IconButton, Switch } from "@mui/material";
+import { Checkbox, TextField, Typography, Button, IconButton, Switch, Accordion } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
-import BookIcon from '@mui/icons-material/Book';
-import DeleteIcon from '@mui/icons-material/Delete';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, JSXElementConstructor, PromiseLikeOfReactNode, ReactElement, ReactNode, ReactPortal, SetStateAction, useEffect, useState } from "react";
 import CssBaseline from '@mui/material/CssBaseline';
+import { CssVarsProvider } from '@mui/material-next/styles';
+import MD3Button from '@mui/material-next/Button';
+import DoDisturbIcon from '@mui/icons-material/DoDisturb';
+import { CircularProgress } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import AccordionActions from '@mui/material/AccordionActions';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import { getReportData } from "../../../../common/api/cohelm";
-// import Link from "next/link";
+import { grey } from "@mui/material/colors";
+import React from "react";
 
 
 interface IReportForm { }
 
 
-export default async function LoginForm({ }: IReportForm) {
-    const router = useRouter();
+export default function ReportForm({ }: IReportForm) {
     const [darkMode, setDarkMode] = useState(false);
-    const [medicalFile, setMedicalFile] = useState<File | null>(null);
-    const [guidelineFile, setGuidelineFile] = useState<File | null>(null);
+    const [statusColor, setStatusColor] = useState(false);
+    const [caseId, setCaseId] = useState("");
+    const [report, setReport] = useState<any>(undefined);
+    const [displayText, setDisplayText] = useState(false);
+    const [isLoading, setLoading] = useState(true)
+    const [selected, setSelected] = useState("");
+    
+    
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
     //Dark mode
@@ -43,155 +55,360 @@ export default async function LoginForm({ }: IReportForm) {
         };
     
 
-    const handleMedicalFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            setMedicalFile(e.target.files[0]);
-          }
-      };
+    
+    useEffect(() => {
+            getReportData()
+            .then((report) => {
+              setReport(report)
+              setLoading(false)
+            })
+      }, [])
 
+      if (isLoading) return <CircularProgress />
+      if (!report) return <p>No report data</p>
+    
+    // let report: any;
+    // try {
+    //     report = await ;
+    //     console.log("Report data:", report);
+    // } catch (error) {
+    //     console.error("Error fetching report data:", error);
+    // }
 
-    const handleGuidelineFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-        setGuidelineFile(e.target.files[0]);
-        }
-    };
+    let status: string | undefined = "";
 
-    const handleMedicalFileDelete = () => {
-        if (medicalFile) {
-            setMedicalFile(null);
-        }
-    };
-
-    const handleGuidelineFileDelete = () => {
-        if (guidelineFile) {
-            setGuidelineFile(null);
-        }
-    };
-
-    const handleRedirect = () => {
-        
-        if (medicalFile && guidelineFile) {
-            router.push('/report');
-        }
-        else if (medicalFile && !guidelineFile) {
-            alert("Please upload Guideline PDF");
-        }
-        else if (!medicalFile && guidelineFile) {
-            alert("Please upload Medical PDF");
-        }
-        else{
-            alert("Please upload BOTH Medical and Guideline PDFs");
-        }
-    };  
-
-    let report;
-    try {
-        report = await getReportData();
-        console.log("Report data:", report);
-    } catch (error) {
-        console.error("Error fetching report data:", error);
+    if (report) {
+      status = report.is_met ? "primary" : "error";
+      
     }
 
-    
+    const handleCaseCopy = () => {
+      // setCaseId(caseId1);
+      setDisplayText(true);
+      setTimeout(() => {
+        setDisplayText(false);
+      }, 10000); 
+      // console.log(caseId1);
+    };
+
+    const handlePageNumber = (pageNumber: any) => {
+      const url = "https://file.notion.so/f/f/372cc316-8aa0-41e7-980a-0d43ccecc1f4/f3b1909a-6eaa-4cc8-bb5b-8e3847609a26/medical-record.pdf?id=27fed38d-7826-4241-8ea8-bf9644e22110&table=block&spaceId=372cc316-8aa0-41e7-980a-0d43ccecc1f4&expirationTimestamp=1708156800000&signature=0MXtvW85KNzEQc0EJBi-glYj6twNueQvLHmKqGU6SKk&downloadName=medical-record.pdf#page=" + pageNumber.toString();
+      window.open(url, '_blank');
+    };
+  
 
     return (
         <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+
         <CssBaseline />
         <div>
             {/* <LightModeIcon/> */}
             <Switch {...label} onChange={toggleDarkMode}/>
             <DarkModeIcon />
         </div>
-
+        
         <>
-        Report Page
-            {report? 
-            <p>{report.case_id}</p>
-            : <></>
-            }
+        {report &&
+        <div className="welcome mt-8 mx-12">
+              <div className="flex flex-row">
+                    <Typography
+                        variant="h5"
+                        color={"#FFA500"}
+                        sx={{ fontFamily: 'Monospace' }}
+                    >
+                        {report.procedure_name}
+                    </Typography>
+
+                    <CssVarsProvider>
+                      <MD3Button disabled={false} variant="text" sx = {{ color: status, fontSize: 12 , fontStyle: "bold"}}  size="medium">
+                        {report.is_met ? "Successful" : "Denied"}
+                        {report.is_met ? <CheckIcon fontSize="inherit"/> : <DoDisturbIcon fontSize="inherit" /> } 
+                      </MD3Button>
+                    </CssVarsProvider>
+
+                
+                </div>
+
+                <div className="flex flex-row mx-2">
+                <CssVarsProvider>
+                      <Button disabled={false} sx = {{ color: "gray", fontSize: 12 , fontStyle: "bold"}}  size="small" onClick={handleCaseCopy}>
+                        {report.case_id}
+                      </Button>
+                      {displayText && <p>Copied<CheckIcon color="success"/></p>}
+                </CssVarsProvider>
+
+                </div>
+
+                <div className="flex flex-row mx-2 mt-4">
+                  <Typography variant="body2" color="textSecondary">
+                  Status
+                  </Typography>
+
+                  <Typography variant="body2" color="textSecondary" className="ml-32">
+                  Progress
+                  </Typography>
+
+                  <Typography variant="body2" color="textSecondary" className="ml-32">
+                  CPT Codes
+                  </Typography>
+
+                </div>
+
+                <div className="flex flex-row mx-2">
+                 <p className="mr-20">{report.is_complete ? "Complete" : "Incomplete"}</p>
+
+                 {report.steps && report.steps.map((step:any, index:any) => ( 
+                 <div className="ml-4" key={index}>
+                  {step.is_met ? <CheckIcon>{"->"}</CheckIcon>: <DoDisturbIcon>{"->"}</DoDisturbIcon>} 
+                  </div>
+                  ))}
+
+
+                &nbsp;&nbsp;
+                
+                {report.cpt_codes && report.cpt_codes.map((cptCode:any, index:any) => (
+                  <div className="ml-4" key={index}>
+                    <CssVarsProvider>
+                          <Button disabled={false} sx = {{ color: "gray", fontSize: 12 , fontStyle: "bold"}}  size="small">
+                            {cptCode}
+                          </Button>
+                          {/* {cptText && <p>Copied<CheckIcon color="success"/></p>} */}
+                    </CssVarsProvider>
+                  </div>
+                ))}
+
+                </div>
+                
+                
+                <div className="flex flex-row mx-2 mt-4">
+                <Typography variant="body2" color="textSecondary">
+                  Summary
+                  </Typography>
+
+                </div>
+
+                <div className="flex flex-row mx-2">
+                <Typography variant="body2" color="textPrimary">
+                  {report.summary}
+                  </Typography>
+                </div>
+
+                <div className="flex flex-col mx-2 mt-4">
+                {report.steps && report.steps.map((step:any, index:any) => (
+                // <div className="flex flex">
+
+                
+                <Accordion>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1-content"
+                      id="panel1-header"
+                      sx={{ backgroundColor: step.is_met ? "#088F8F" : "#D22B2B" }} 
+                    >
+                      Instructions
+                    </AccordionSummary>
+                    <AccordionDetails>
+                    {step.question}
+
+                    <Typography variant="body2" color="green">
+                        Selected Options
+                      </Typography>
+
+                    {step.options && step.options.map((option:any, index:any) => (
+                      <>
+                      {option.selected && 
+                       <Typography variant="body2" color="green">
+                       <CheckIcon /> {option.key} {option.text}
+                      </Typography>}
+                      </>
+                    ))}
+                      
+                          <Accordion>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                                sx={{ backgroundColor: step.is_met ? "#088F8F" : "#D22B2B" }} 
+                              >
+                                Show all Options
+                              </AccordionSummary>
+                              <AccordionDetails >
+        
+                              {step.options && step.options.map((option:any, index:any) => (
+                              <>
+                              <div className="flex flex-col">
+                              <FormControlLabel control={<Checkbox checked={option.selected} />} label={option.text} />
+                              </div>
+                              </>
+                              ))}
+                             
+                                  
+                                
+                              </AccordionDetails>
+                        </Accordion>
+                        
+
+                        <div></div>
+                        <br/><br/>
+                        <div className="font-bold"> 
+                        Option/Section &nbsp;
+                        {step.options && step.options
+                                          .filter((option: any) => option.selected)
+                                          .map((option: any, index: any) => (
+                                      <>
+                                              
+                                               {option.key} {index < step.options.length - 1 && ', '}
+                                      </>
+                                        ))} 
+                         
+                        has been selected because...
+                        </div>
+                       
+                    {step.reasoning && step.reasoning.split("\n").map((sent:any , index:any) => (
+                      <div className="mt-2">
+                      {sent}
+                      </div>
+
+                    ))}
+                    
+                    <div className="mt-4">
+                    <Accordion>
+                              <AccordionSummary
+                                expandIcon={<ExpandMoreIcon />}
+                                aria-controls="panel1-content"
+                                id="panel1-header"
+                                sx={{ backgroundColor: "#d3d3d3" }} 
+                              >
+                                <LightbulbOutlinedIcon />
+                               The decision was made based on citations from the medical record
+                              </AccordionSummary>
+                              <AccordionDetails >
+        
+                                    <Accordion>
+                                          <AccordionSummary
+                                            expandIcon={<ExpandMoreIcon />}
+                                            aria-controls="panel1-content"
+                                            id="panel1-header"
+                                            
+                                          >
+                                            Show Evidence
+                                          </AccordionSummary>
+                                          <AccordionDetails >
+
+                                          <div className="flex flex-row ml-12">
+                                          <Typography variant="body2" color="gray">
+                                               Page Number
+                                            </Typography>
+                                            &nbsp; &nbsp; &nbsp;
+                                            <Typography variant="body2" color="gray">
+                                               Content
+                                            </Typography>
+                                          </div>
+                    
+                                          {step.evidence && step.evidence.map((evidence:any, index:any) => (
+                                            <>
+                                            
+                                            <div className="flex flex-row ml-12">
+                                                <div key={index} className="flex flex-row items-center justify-between">
+                                                <CssVarsProvider>
+                                                    <Button disabled={false} sx = {{ color: "gray", fontSize: 12 , fontStyle: "bold"}}  size="small" onClick={() => handlePageNumber(evidence.page_number)}>
+                                                      Page {evidence.page_number}
+                                                    
+                                                    </Button>
+                                              </CssVarsProvider>
+                                              </div>                                            
+                                              &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+                                                <div key={index} className="flex flex-row items-center justify-between">
+                                                <Typography variant="body2" color="black">
+                                                  {evidence.content}
+                                                </Typography>
+                                                </div>
+                                                </div>
+                                            <div className="border-t border-gray-400 mt-4 ml-12 mr-12" color="gray"></div>
+                                            </>
+                                          ))}
+                                        
+                                              
+                                            
+                                          </AccordionDetails>
+                                    </Accordion>
+                                    
+                                   
+                                    <div className="font-bold"> 
+                                   
+                                    {step.logic && step.logic.length > 1 && step.logic
+                                                      .filter((logic: any) => logic.selected)
+                                                      .map((logic: any, index: any) => (
+                                                  <>
+                                                          
+                                                          {logic.text.split(", ").map((sublogic:any, subIndex:any) =>
+                                                                <React.Fragment key={index * 1000 + subIndex}>
+                                                                  {subIndex % 2 == 0 ? (
+                                                                    
+                                                                    <>
+                                                                      <div key={subIndex} >{sublogic},</div>
+                                                                    </>
+                                                                  ) : (
+                                                                  <>
+                                                                    <div className="underline" key={subIndex}>
+                                                                      {sublogic}. 
+                                                                      
+                                                                    </div>
+                                                                  </>
+                                                                  )}
+                                                                  </React.Fragment>
+
+                                                          )} 
+                                                  </>
+                                                    ))} 
+                                    
+                                    
+                                    </div>
+                                    
+                                    {step.logic && step.logic.length > 1 &&               
+                                    <Accordion>
+                                        <AccordionSummary
+                                          expandIcon={<ExpandMoreIcon />}
+                                          aria-controls="panel1-content"
+                                          id="panel1-header"
+                                        >
+                                          Why?
+                                        </AccordionSummary>
+                                        <AccordionDetails >
+                  
+                                        {step.logic && step.logic
+                                                      .map((logic: any, index: any) => (
+                                        <>
+                                            <div className="flex flex-col">
+                                            <FormControlLabel control={<Checkbox checked={logic.selected} />} label={logic.text} />
+                                            </div>
+                                        </>
+                                        ))}
+                                      
+                                            
+                                          
+                                        </AccordionDetails>
+                                  </Accordion>
+                                    }
+                                
+                              </AccordionDetails>
+                      </Accordion>
+
+                  </div>
+                      
+                      
+                    </AccordionDetails>
+              </Accordion>
+              //  </div>
+                ))}
+              </div>
+
+        </div> 
+        }
 
         </>
 
-        <div className="login-form">
-            
-            <div className="inputs-form text-center">
-                <div className="welcome">
-                    <Typography
-                        variant="h4"
-                        color={"#FFA500"}
-                    >
-                        Welcome to Co:helm
-                    </Typography>
-                </div>
-
-                <div className="flex flex-col items-center justify-center h-32">
-                    <div className="mt-32">
-                        <Button
-                            component="label"
-                            variant="outlined"
-                            startIcon={<UploadFileIcon />}
-                            sx={{ marginRight: "1rem"}}
-                        >
-                            MEDICAL RECORD 
-                            <input type="file" accept=".pdf" hidden onChange={handleMedicalFileUpload} />
-                        </Button>
-
-                        <div className="mt-4">
-                        {medicalFile && (
-                            <section>
-                                {medicalFile.name}
-                                <IconButton aria-label="delete" size="small" onClick={handleMedicalFileDelete}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </section>
-                        )}
-                        </div>
-                    </div>
-
-                    <div className="mt-2">
-                        <Button
-                            component="label"
-                            variant="outlined"
-                            startIcon={<UploadFileIcon />}
-                            sx={{ marginRight: "1rem" }}
-                        >
-                            GUIDELINES 
-                            <input type="file" accept=".pdf" hidden onChange={handleGuidelineFileUpload} />
-                        </Button>
-
-                        <div className="mt-4">
-                        {guidelineFile && (
-                            <section>
-                                {guidelineFile.name}
-                                <IconButton aria-label="delete" size="small" onClick={handleGuidelineFileDelete}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </section>
-                        )}
-                        </div>
-                    </div>
-              
-                
-                    <div className="mt-12">
-                        <Button
-                            component="label"
-                            variant="contained"
-                            startIcon={<BookIcon />}
-                            sx={{ marginRight: "1rem"}}
-                            onClick={handleRedirect}
-                        >
-                            GENERATE
-                            {/* <Link href={'/cohelm'}></Link> */}
-                        </Button>
-
-                    </div>
-                </div>
-           
-
-               
-            </div>
-
-        </div> 
+        
     </ThemeProvider>
     )
 }

@@ -14,4 +14,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     console.error('Error reading or parsing the file:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
+
+  
 }
