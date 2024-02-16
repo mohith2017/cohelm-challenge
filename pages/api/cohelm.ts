@@ -1,10 +1,10 @@
-// pages/api/hello.ts
 import { NextApiRequest, NextApiResponse } from 'next';
+import path from 'path';
 import fs from 'fs';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Path to the file containing the JSON data
-  const filePath = 'public/data/example-response.json';
+  // const filePath = '../data/example-response.json';
+  const filePath = path.join(process.cwd(), 'public', 'data', 'example-response.json');
   
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
