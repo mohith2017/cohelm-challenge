@@ -140,17 +140,24 @@ export default function ReportForm({ }: IReportForm) {
                 </div>
 
                 <div className="flex flex-row mx-2 mt-4">
+                
+                <div>
                   <Typography variant="body2" color="textSecondary">
                   Status
                   </Typography>
+                  </div>
 
-                  <Typography variant="body2" color="textSecondary" className="ml-32">
+                  <div className="ml-32" >
+                  <Typography variant="body2" color="textSecondary">
                   Progress
                   </Typography>
+                  </div>
 
-                  <Typography variant="body2" color="textSecondary" className="ml-32">
+                  <div className="ml-32" >
+                  <Typography variant="body2" color="textSecondary">
                   CPT Codes
                   </Typography>
+                  </div>
 
                 </div>
 
