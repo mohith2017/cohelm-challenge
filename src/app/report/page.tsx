@@ -10,13 +10,16 @@ export const metadata: Metadata = {
 
 
 export default async function Page() {
-  const report  = await getReportData(); 
-  
+    const report = await getReportData();
+
 
   return (
     <>
     Report Page
-        {/* <p>{report.case_id}</p> */}
+    {report? 
+      <p>{report.case_id}</p>
+     : <></>
+    }
 
     </>
   )
