@@ -1,3 +1,7 @@
+## About
+This project was built to demonstrate frontend and Full stack technical proficiency by building a UI based on an incoming API call to the application, converting that into a frontend web application using Next.js and Material UI
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
